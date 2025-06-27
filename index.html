@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTS Game UI Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-areas: 
+                "resources resources resources"
+                "map map minimap"
+                "build research controls";
+            grid-template-columns: 1fr 1fr 300px;
+            grid-template-rows: 50px 1fr 200px;
+            height: 100vh;
+            gap: 2px;
+            background: #333;
+        }
+
+        .resource-panel {
+            grid-area: resources;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 2px solid #444;
+        }
+
+        .resource-item {
+            margin-right: 30px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        .resource-item:hover {
+            background: #444;
+        }
+
+        .main-map {
+            grid-area: map;
+            background: #0a0a0a;
+            position: relative;
+            border: 2px solid #444;
+            overflow: hidden;
+        }
+
+        .minimap {
+            grid-area: minimap;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            position: relative;
+        }
+
+        .build-menu {
+            grid-area: build;
+            background: #2a2a2a;
+            border: 2px solid #444;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .research-menu {
+            grid-area: research;
+            background: #2a2a2a;
+            border: 2px solid #444;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .controls {
+            grid-area: controls;
+            background: #2a2a2a;
+            border: 2px solid #444;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-title {
+            color: #00ccff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .menu-button {
+            background: #444;
+            color: #00ff00;
+            border: 1px solid #666;
+            padding: 8px 12px;
+            margin: 2px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+
+        .menu-button:hover {
+            background: #555;
+            border-color: #00ff00;
+        }
+
+        .menu-button:active {
+            background: #666;
+        }
+
+        .control-button {
+            background: #333;
+            color: #00ff00;
+            border: 2px solid #555;
+            padding: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .control-button:hover {
+            background: #444;
+            border-color: #00ff00;
+        }
+
+        .status-display {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            min-width: 300px;
+            border: 1px solid #444;
+        }
+
+        .map-svg {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .minimap-svg {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .terrain {
+            fill: #2d4a2d;
+            stroke: #1a3d1a;
+            stroke-width: 0.5;
+        }
+
+        .water {
+            fill: #1a3d5c;
+            stroke: #0f2a3d;
+            stroke-width: 0.5;
+        }
+
+        .mountain {
+            fill: #4a4a4a;
+            stroke: #333;
+            stroke-width: 0.5;
+        }
+
+        .unit {
+            fill: #ffff00;
+            stroke: #cccc00;
+            stroke-width: 1;
+        }
+
+        .building {
+            fill: #ff6600;
+            stroke: #cc5500;
+            stroke-width: 1;
+        }
+
+        .resource-node {
+            fill: #0066ff;
+            stroke: #0044cc;
+            stroke-width: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="resource-panel">
+            <div class="resource-item" onclick="handleResourceClick('gold')">
+                💰 Gold: 1500
+            </div>
+            <div class="resource-item" onclick="handleResourceClick('wood')">
+                🌲 Wood: 800
+            </div>
+            <div class="resource-item" onclick="handleResourceClick('stone')">
+                🗿 Stone: 600
+            </div>
+            <div class="resource-item" onclick="handleResourceClick('food')">
+                🌾 Food: 400
+            </div>
+            <div class="resource-item" onclick="handleResourceClick('population')">
+                👥 Population: 45/100
+            </div>
+        </div>
+
+        <div class="main-map">
+            <svg class="map-svg" viewBox="0 0 800 600" onclick="handleMapClick(event)">
+                <!-- Terrain -->
+                <rect class="terrain" x="0" y="0" width="800" height="600"/>
+                
+                <!-- Water bodies -->
+                <ellipse class="water" cx="200" cy="150" rx="80" ry="40"/>
+                <ellipse class="water" cx="600" cy="400" rx="100" ry="60"/>
+                
+                <!-- Mountains -->
+                <polygon class="mountain" points="100,100 150,50 200,100 175,150 125,150"/>
+                <polygon class="mountain" points="650,200 700,150 750,200 725,250 675,250"/>
+                <polygon class="mountain" points="50,450 100,400 150,450 125,500 75,500"/>
+                
+                <!-- Resource nodes -->
+                <circle class="resource-node" cx="300" cy="200" r="8"/>
+                <circle class="resource-node" cx="500" cy="300" r="8"/>
+                <circle class="resource-node" cx="400" cy="500" r="8"/>
+                
+                <!-- Buildings -->
+                <rect class="building" x="350" y="250" width="30" height="30"/>
+                <rect class="building" x="400" y="200" width="25" height="25"/>
+                
+                <!-- Units -->
+                <circle class="unit" cx="320" cy="280" r="5"/>
+                <circle class="unit" cx="380" cy="320" r="5"/>
+                <circle class="unit" cx="450" cy="250" r="5"/>
+                <circle class="unit" cx="420" cy="280" r="5"/>
+            </svg>
+        </div>
+
+        <div class="minimap">
+            <div class="menu-title">MINIMAP</div>
+            <svg class="minimap-svg" viewBox="0 0 200 150" onclick="handleMinimapClick(event)">
+                <!-- Simplified terrain -->
+                <rect class="terrain" x="0" y="0" width="200" height="150"/>
+                
+                <!-- Water -->
+                <ellipse class="water" cx="50" cy="37" rx="20" ry="10"/>
+                <ellipse class="water" cx="150" cy="100" rx="25" ry="15"/>
+                
+                <!-- Mountains -->
+                <polygon class="mountain" points="25,25 37,12 50,25 43,37 31,37"/>
+                <polygon class="mountain" points="162,50 175,37 187,50 181,62 168,62"/>
+                
+                <!-- Buildings -->
+                <rect class="building" x="87" y="62" width="8" height="8"/>
+                <rect class="building" x="100" y="50" width="6" height="6"/>
+                
+                <!-- Units -->
+                <circle class="unit" cx="80" cy="70" r="2"/>
+                <circle class="unit" cx="95" cy="80" r="2"/>
+                <circle class="unit" cx="112" cy="62" r="2"/>
+                
+                <!-- View rectangle -->
+                <rect x="70" y="45" width="60" height="40" fill="none" stroke="#ffff00" stroke-width="1" opacity="0.7"/>
+            </svg>
+        </div>
+
+        <div class="build-menu">
+            <div class="menu-title">BUILD MENU</div>
+            <button class="menu-button" onclick="handleBuildButton('barracks')">Barracks</button>
+            <button class="menu-button" onclick="handleBuildButton('house')">House</button>
+            <button class="menu-button" onclick="handleBuildButton('farm')">Farm</button>
+            <button class="menu-button" onclick="handleBuildButton('mine')">Mine</button>
+            <button class="menu-button" onclick="handleBuildButton('tower')">Tower</button>
+            <button class="menu-button" onclick="handleBuildButton('wall')">Wall</button>
+            <button class="menu-button" onclick="handleBuildButton('gate')">Gate</button>
+            <button class="menu-button" onclick="handleBuildButton('workshop')">Workshop</button>
+        </div>
+
+        <div class="research-menu">
+            <div class="menu-title">RESEARCH</div>
+            <button class="menu-button" onclick="handleResearchButton('armor')">Armor Tech</button>
+            <button class="menu-button" onclick="handleResearchButton('weapons')">Weapon Tech</button>
+            <button class="menu-button" onclick="handleResearchButton('agriculture')">Agriculture</button>
+            <button class="menu-button" onclick="handleResearchButton('mining')">Mining Tech</button>
+            <button class="menu-button" onclick="handleResearchButton('construction')">Construction</button>
+            <button class="menu-button" onclick="handleResearchButton('magic')">Magic Arts</button>
+            <button class="menu-button" onclick="handleResearchButton('tactics')">Tactics</button>
+        </div>
+
+        <div class="controls">
+            <div class="menu-title">UNIT CONTROLS</div>
+            <button class="control-button" onclick="handleUnitCommand('move')">MOVE</button>
+            <button class="control-button" onclick="handleUnitCommand('attack')">ATTACK</button>
+            <button class="control-button" onclick="handleUnitCommand('patrol')">PATROL</button>
+            <button class="control-button" onclick="handleUnitCommand('stop')">STOP</button>
+        </div>
+    </div>
+
+    <div class="status-display" id="status">
+        RTS Game UI Mockup - Click on any element to see status messages
+    </div>
+
+    <script type="module">
+        import init, { 
+            handle_map_click, 
+            handle_minimap_click, 
+            handle_build_button, 
+            handle_research_button, 
+            handle_unit_command,
+            handle_resource_click,
+            log_status 
+        } from './pkg/rts_mock.js';
+
+        async function run() {
+            await init();
+            
+            // Override console.log to show status in UI
+            const originalLog = console.log;
+            console.log = function(message) {
+                originalLog(message);
+                const statusEl = document.getElementById('status');
+                if (statusEl && typeof message === 'string' && message.includes('RTS Status:')) {
+                    statusEl.textContent = message.replace('RTS Status: ', '');
+                }
+            };
+
+            // Make functions globally available
+            window.handleMapClick = function(event) {
+                const rect = event.target.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                handle_map_click(x, y);
+            };
+
+            window.handleMinimapClick = function(event) {
+                const rect = event.target.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                handle_minimap_click(x, y);
+            };
+
+            window.handleBuildButton = function(building) {
+                handle_build_button(building);
+            };
+
+            window.handleResearchButton = function(tech) {
+                handle_research_button(tech);
+            };
+
+            window.handleUnitCommand = function(command) {
+                handle_unit_command(command);
+            };
+
+            window.handleResourceClick = function(resource) {
+                handle_resource_click(resource);
+            };
+
+            log_status("Game UI initialized successfully");
+        }
+
+        run();
+    </script>
+</body>
+</html>
