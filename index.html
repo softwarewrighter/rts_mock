@@ -55,7 +55,7 @@
 
         .main-map {
             grid-area: map;
-            background: #0a0a0a;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
             position: relative;
             border: 2px solid #444;
             overflow: hidden;
@@ -159,37 +159,75 @@
             height: 100%;
         }
 
-        .terrain {
+        /* Main map isometric styles */
+        .map-svg .terrain {
+            fill: url(#terrainGradient);
+            stroke: #1a3a1a;
+            stroke-width: 0.5;
+        }
+
+        .map-svg .water {
+            fill: url(#waterGradient);
+            stroke: #002244;
+            stroke-width: 0.5;
+        }
+
+        .map-svg .mountain {
+            fill: url(#mountainGradient);
+            stroke: #333;
+            stroke-width: 0.5;
+        }
+
+        .map-svg .building {
+            fill: url(#buildingGradient);
+            stroke: #6a4a2a;
+            stroke-width: 1;
+        }
+
+        .map-svg .unit {
+            fill: url(#unitGradient);
+            stroke: #cccc00;
+            stroke-width: 1;
+        }
+
+        .map-svg .resource-node {
+            fill: url(#resourceGradient);
+            stroke: #0044cc;
+            stroke-width: 1;
+        }
+
+        /* Minimap 2D styles (simpler, top-down) */
+        .minimap-svg .terrain {
             fill: #2a4a2a;
             stroke: #1a3a1a;
             stroke-width: 1;
         }
 
-        .water {
+        .minimap-svg .water {
             fill: #003366;
             stroke: #002244;
             stroke-width: 1;
         }
 
-        .mountain {
+        .minimap-svg .mountain {
             fill: #4a4a4a;
             stroke: #333;
             stroke-width: 1;
         }
 
-        .building {
+        .minimap-svg .building {
             fill: #8a6a3a;
             stroke: #6a4a2a;
-            stroke-width: 2;
+            stroke-width: 1;
         }
 
-        .unit {
+        .minimap-svg .unit {
             fill: #ffff00;
             stroke: #cccc00;
             stroke-width: 1;
         }
 
-        .resource-node {
+        .minimap-svg .resource-node {
             fill: #0066ff;
             stroke: #0044cc;
             stroke-width: 1;
@@ -222,53 +260,194 @@
 
         <div class="main-map" id="main-map">
             <svg class="map-svg" id="map-svg" viewBox="0 0 800 600">
+                <defs>
+                    <!-- Gradients for 3D effect -->
+                    <linearGradient id="terrainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#3a5a3a"/>
+                        <stop offset="50%" stop-color="#2a4a2a"/>
+                        <stop offset="100%" stop-color="#1a3a1a"/>
+                    </linearGradient>
+                    <radialGradient id="waterGradient" cx="50%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#004488"/>
+                        <stop offset="50%" stop-color="#003366"/>
+                        <stop offset="100%" stop-color="#002244"/>
+                    </radialGradient>
+                    <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#6a6a6a"/>
+                        <stop offset="50%" stop-color="#4a4a4a"/>
+                        <stop offset="100%" stop-color="#333"/>
+                    </linearGradient>
+                    <linearGradient id="buildingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#aa8a5a"/>
+                        <stop offset="50%" stop-color="#8a6a3a"/>
+                        <stop offset="100%" stop-color="#6a4a2a"/>
+                    </linearGradient>
+                    <radialGradient id="unitGradient" cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#ffff88"/>
+                        <stop offset="50%" stop-color="#ffff00"/>
+                        <stop offset="100%" stop-color="#cccc00"/>
+                    </radialGradient>
+                    <radialGradient id="resourceGradient" cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#0088ff"/>
+                        <stop offset="50%" stop-color="#0066ff"/>
+                        <stop offset="100%" stop-color="#0044cc"/>
+                    </radialGradient>
+                </defs>
                 <g id="map-content">
-                    <!-- Terrain (now covers the full map size) -->
+                    <!-- Terrain (isometric base) -->
                     <rect class="terrain" x="0" y="0" width="2400" height="1800"/>
                     
-                    <!-- Water bodies (distributed across the larger map) -->
+                    <!-- Water bodies with isometric perspective -->
                     <ellipse class="water" cx="200" cy="150" rx="80" ry="40"/>
                     <ellipse class="water" cx="600" cy="400" rx="100" ry="60"/>
                     <ellipse class="water" cx="1400" cy="800" rx="120" ry="70"/>
                     <ellipse class="water" cx="2000" cy="300" rx="90" ry="50"/>
                     <ellipse class="water" cx="1800" cy="1400" rx="150" ry="80"/>
                     
-                    <!-- Mountains (distributed across the larger map) -->
-                    <polygon class="mountain" points="100,100 150,50 200,100 175,150 125,150"/>
-                    <polygon class="mountain" points="650,200 700,150 750,200 725,250 675,250"/>
-                    <polygon class="mountain" points="50,450 100,400 150,450 125,500 75,500"/>
-                    <polygon class="mountain" points="1200,600 1250,550 1300,600 1275,650 1225,650"/>
-                    <polygon class="mountain" points="1600,1000 1650,950 1700,1000 1675,1050 1625,1050"/>
-                    <polygon class="mountain" points="2200,1500 2250,1450 2300,1500 2275,1550 2225,1550"/>
-                    <polygon class="mountain" points="900,1300 950,1250 1000,1300 975,1350 925,1350"/>
+                    <!-- Mountains as isometric blocks -->
+                    <g class="mountain" transform="translate(100,100)">
+                        <polygon points="0,40 25,15 75,15 50,40 25,65 -25,65"/>
+                        <polygon points="25,15 75,15 75,-10 25,-10" fill="#5a5a5a"/>
+                        <polygon points="75,15 50,40 50,15 75,-10" fill="#3a3a3a"/>
+                    </g>
+                    <g class="mountain" transform="translate(650,200)">
+                        <polygon points="0,40 25,15 75,15 50,40 25,65 -25,65"/>
+                        <polygon points="25,15 75,15 75,-10 25,-10" fill="#5a5a5a"/>
+                        <polygon points="75,15 50,40 50,15 75,-10" fill="#3a3a3a"/>
+                    </g>
+                    <g class="mountain" transform="translate(50,450)">
+                        <polygon points="0,40 25,15 75,15 50,40 25,65 -25,65"/>
+                        <polygon points="25,15 75,15 75,-10 25,-10" fill="#5a5a5a"/>
+                        <polygon points="75,15 50,40 50,15 75,-10" fill="#3a3a3a"/>
+                    </g>
+                    <g class="mountain" transform="translate(1200,600)">
+                        <polygon points="0,40 25,15 75,15 50,40 25,65 -25,65"/>
+                        <polygon points="25,15 75,15 75,-10 25,-10" fill="#5a5a5a"/>
+                        <polygon points="75,15 50,40 50,15 75,-10" fill="#3a3a3a"/>
+                    </g>
+                    <g class="mountain" transform="translate(1600,1000)">
+                        <polygon points="0,40 25,15 75,15 50,40 25,65 -25,65"/>
+                        <polygon points="25,15 75,15 75,-10 25,-10" fill="#5a5a5a"/>
+                        <polygon points="75,15 50,40 50,15 75,-10" fill="#3a3a3a"/>
+                    </g>
+                    <g class="mountain" transform="translate(2200,1500)">
+                        <polygon points="0,40 25,15 75,15 50,40 25,65 -25,65"/>
+                        <polygon points="25,15 75,15 75,-10 25,-10" fill="#5a5a5a"/>
+                        <polygon points="75,15 50,40 50,15 75,-10" fill="#3a3a3a"/>
+                    </g>
+                    <g class="mountain" transform="translate(900,1300)">
+                        <polygon points="0,40 25,15 75,15 50,40 25,65 -25,65"/>
+                        <polygon points="25,15 75,15 75,-10 25,-10" fill="#5a5a5a"/>
+                        <polygon points="75,15 50,40 50,15 75,-10" fill="#3a3a3a"/>
+                    </g>
                     
-                    <!-- Resource nodes (distributed across the larger map) -->
-                    <circle class="resource-node" cx="300" cy="200" r="8"/>
-                    <circle class="resource-node" cx="500" cy="300" r="8"/>
-                    <circle class="resource-node" cx="400" cy="500" r="8"/>
-                    <circle class="resource-node" cx="1100" cy="400" r="8"/>
-                    <circle class="resource-node" cx="1500" cy="700" r="8"/>
-                    <circle class="resource-node" cx="1800" cy="1100" r="8"/>
-                    <circle class="resource-node" cx="2100" cy="900" r="8"/>
-                    <circle class="resource-node" cx="700" cy="1200" r="8"/>
-                    <circle class="resource-node" cx="1300" cy="1500" r="8"/>
+                    <!-- Resource nodes as isometric crystals -->
+                    <g transform="translate(300,200)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(500,300)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(400,500)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(1100,400)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(1500,700)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(1800,1100)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(2100,900)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(700,1200)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
+                    <g transform="translate(1300,1500)">
+                        <polygon class="resource-node" points="0,6 4,2 8,6 4,10" transform="rotate(-45)"/>
+                        <polygon points="4,2 8,6 8,2 4,-2" fill="#0088ff"/>
+                        <polygon points="8,6 4,10 4,6 8,2" fill="#0044cc"/>
+                    </g>
                     
-                    <!-- Buildings (distributed across the larger map) -->
-                    <rect class="building" x="1150" y="1050" width="30" height="30"/>
-                    <rect class="building" x="1200" y="1000" width="25" height="25"/>
-                    <rect class="building" x="1600" y="600" width="35" height="35"/>
-                    <rect class="building" x="2000" y="1200" width="30" height="30"/>
-                    <rect class="building" x="800" y="800" width="40" height="40"/>
+                    <!-- Buildings as isometric structures -->
+                    <g transform="translate(1150,1050)">
+                        <polygon class="building" points="0,30 15,15 45,15 30,30 15,45 -15,45"/>
+                        <polygon points="15,15 45,15 45,-5 15,-5" fill="#aa8a5a"/>
+                        <polygon points="45,15 30,30 30,10 45,-5" fill="#6a4a2a"/>
+                    </g>
+                    <g transform="translate(1200,1000)">
+                        <polygon class="building" points="0,25 12.5,12.5 37.5,12.5 25,25 12.5,37.5 -12.5,37.5"/>
+                        <polygon points="12.5,12.5 37.5,12.5 37.5,-2.5 12.5,-2.5" fill="#aa8a5a"/>
+                        <polygon points="37.5,12.5 25,25 25,10 37.5,-2.5" fill="#6a4a2a"/>
+                    </g>
+                    <g transform="translate(1600,600)">
+                        <polygon class="building" points="0,35 17.5,17.5 52.5,17.5 35,35 17.5,52.5 -17.5,52.5"/>
+                        <polygon points="17.5,17.5 52.5,17.5 52.5,-7.5 17.5,-7.5" fill="#aa8a5a"/>
+                        <polygon points="52.5,17.5 35,35 35,10 52.5,-7.5" fill="#6a4a2a"/>
+                    </g>
+                    <g transform="translate(2000,1200)">
+                        <polygon class="building" points="0,30 15,15 45,15 30,30 15,45 -15,45"/>
+                        <polygon points="15,15 45,15 45,-5 15,-5" fill="#aa8a5a"/>
+                        <polygon points="45,15 30,30 30,10 45,-5" fill="#6a4a2a"/>
+                    </g>
+                    <g transform="translate(800,800)">
+                        <polygon class="building" points="0,40 20,20 60,20 40,40 20,60 -20,60"/>
+                        <polygon points="20,20 60,20 60,-10 20,-10" fill="#aa8a5a"/>
+                        <polygon points="60,20 40,40 40,10 60,-10" fill="#6a4a2a"/>
+                    </g>
                     
-                    <!-- Units (distributed across the larger map) -->
-                    <circle class="unit" cx="1120" cy="1080" r="5"/>
-                    <circle class="unit" cx="1180" cy="1120" r="5"/>
-                    <circle class="unit" cx="1250" cy="1050" r="5"/>
-                    <circle class="unit" cx="1220" cy="1080" r="5"/>
-                    <circle class="unit" cx="820" cy="850" r="5"/>
-                    <circle class="unit" cx="850" cy="820" r="5"/>
-                    <circle class="unit" cx="1650" cy="650" r="5"/>
-                    <circle class="unit" cx="2050" cy="1250" r="5"/>
+                    <!-- Units as isometric figures -->
+                    <g transform="translate(1120,1080)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
+                    <g transform="translate(1180,1120)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
+                    <g transform="translate(1250,1050)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
+                    <g transform="translate(1220,1080)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
+                    <g transform="translate(820,850)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
+                    <g transform="translate(850,820)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
+                    <g transform="translate(1650,650)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
+                    <g transform="translate(2050,1250)">
+                        <ellipse class="unit" cx="0" cy="0" rx="8" ry="4" transform="rotate(-45)"/>
+                        <ellipse cx="-1" cy="-2" rx="6" ry="3" fill="#ffff88" transform="rotate(-45)"/>
+                    </g>
                 </g>
             </svg>
         </div>
@@ -383,7 +562,11 @@
         function updateMapView() {
             const mapContent = document.getElementById('map-content');
             if (mapContent) {
-                mapContent.setAttribute('transform', `translate(${-mapState.viewportX}, ${-mapState.viewportY})`);
+                // Apply viewport translation first, then gentler isometric transformation
+                const viewportTransform = `translate(${-mapState.viewportX}, ${-mapState.viewportY})`;
+                // Reduced rotation for better minimap alignment: less skew, more similar to top-down
+                const isoTransform = 'matrix(1, 0.15, -0.3, 0.9, 200, 50)';
+                mapContent.setAttribute('transform', `${isoTransform} ${viewportTransform}`);
             }
             updateMinimapViewport();
         }
@@ -410,7 +593,7 @@
             const mapDiv = document.getElementById('main-map');
             const rect = mapDiv.getBoundingClientRect();
             const edgeThreshold = 50;
-            const scrollSpeed = 15;
+            const scrollSpeed = 20;
             
             let dx = 0;
             let dy = 0;
@@ -450,15 +633,27 @@
             const mapSvg = document.getElementById('map-svg');
             const mapDiv = document.getElementById('main-map');
             
-            // Map click handler
+            // Map click handler with isometric coordinate conversion
             mapSvg.addEventListener('click', function(event) {
                 if (!isDragging) {
-                    const pt = mapSvg.createSVGPoint();
-                    pt.x = event.clientX;
-                    pt.y = event.clientY;
-                    const svgP = pt.matrixTransform(mapSvg.getScreenCTM().inverse());
-                    const worldX = svgP.x + mapState.viewportX;
-                    const worldY = svgP.y + mapState.viewportY;
+                    const rect = mapSvg.getBoundingClientRect();
+                    const screenX = event.clientX - rect.left;
+                    const screenY = event.clientY - rect.top;
+                    
+                    // Convert screen coordinates to SVG coordinates
+                    const svgX = (screenX / rect.width) * 800;
+                    const svgY = (screenY / rect.height) * 600;
+                    
+                    // Reverse the isometric transformation matrix
+                    // matrix(0.866, 0.5, -0.866, 0.5, 400, 100)
+                    const adjustedX = svgX - 400;
+                    const adjustedY = svgY - 100;
+                    
+                    // Apply inverse matrix transformation
+                    const det = 0.866 * 0.5 - 0.5 * (-0.866); // determinant
+                    const worldX = ((0.5 * adjustedX) - (-0.866 * adjustedY)) / det + mapState.viewportX;
+                    const worldY = ((-0.5 * adjustedX) + (0.866 * adjustedY)) / det + mapState.viewportY;
+                    
                     handle_map_click(worldX, worldY);
                 }
             });
@@ -476,7 +671,7 @@
                 }
             });
 
-            // Mouse move for drag and edge scroll
+            // Mouse move for drag and edge scroll with isometric adjustments
             document.addEventListener('mousemove', function(event) {
                 const rect = mapDiv.getBoundingClientRect();
                 const isOverMap = event.clientX >= rect.left && event.clientX <= rect.right &&
@@ -487,10 +682,12 @@
                     currentMousePos.y = event.clientY - rect.top;
                     
                     if (isDragging && event.buttons === 1) {
-                        const dx = dragStart.x - event.clientX;
-                        const dy = dragStart.y - event.clientY;
-                        mapState.viewportX = viewportStart.x + dx;
-                        mapState.viewportY = viewportStart.y + dy;
+                        // Direct 1:1 movement without scaling compensation
+                        const screenDx = dragStart.x - event.clientX;
+                        const screenDy = dragStart.y - event.clientY;
+                        
+                        mapState.viewportX = viewportStart.x + screenDx;
+                        mapState.viewportY = viewportStart.y + screenDy;
                         clampViewport();
                         updateMapView();
                     } else if (!isDragging && !scrollInterval) {
@@ -531,9 +728,9 @@
                 handle_minimap_click(svgP.x, svgP.y);
             });
 
-            // Keyboard controls
+            // Keyboard controls with isometric adjustments
             document.addEventListener('keydown', function(event) {
-                const step = 30;
+                const step = 40;
                 let moved = false;
                 
                 switch(event.key) {
