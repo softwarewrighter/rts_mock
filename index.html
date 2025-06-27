@@ -59,6 +59,11 @@
             position: relative;
             border: 2px solid #444;
             overflow: hidden;
+            cursor: grab;
+        }
+        
+        .main-map.dragging {
+            cursor: grabbing;
         }
 
         .minimap {
@@ -98,91 +103,84 @@
             color: #00ccff;
             font-weight: bold;
             margin-bottom: 10px;
-            text-align: center;
+            text-transform: uppercase;
             font-size: 14px;
         }
 
-        .menu-button {
-            background: #444;
+        .menu-button, .control-button {
+            background: #1a1a1a;
             color: #00ff00;
-            border: 1px solid #666;
-            padding: 8px 12px;
-            margin: 2px;
+            border: 1px solid #00ff00;
+            padding: 8px 16px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 12px;
-            border-radius: 3px;
+            font-size: 14px;
+            text-transform: uppercase;
             transition: all 0.2s;
+            margin-bottom: 5px;
+            display: block;
+            width: 100%;
         }
 
-        .menu-button:hover {
-            background: #555;
-            border-color: #00ff00;
-        }
-
-        .menu-button:active {
-            background: #666;
+        .menu-button:hover, .control-button:hover {
+            background: #00ff00;
+            color: #1a1a1a;
+            box-shadow: 0 0 10px #00ff00;
         }
 
         .control-button {
-            background: #333;
-            color: #00ff00;
-            border: 2px solid #555;
-            padding: 10px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: all 0.2s;
+            background: #2a2a2a;
+            border: 2px solid #00ccff;
+            color: #00ccff;
         }
 
         .control-button:hover {
-            background: #444;
-            border-color: #00ff00;
+            background: #00ccff;
+            color: #1a1a1a;
+            box-shadow: 0 0 10px #00ccff;
         }
 
         .status-display {
             position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.8);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
             color: #00ff00;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            min-width: 300px;
-            border: 1px solid #444;
+            padding: 10px 20px;
+            border-top: 2px solid #444;
+            font-size: 14px;
+            z-index: 1000;
         }
 
-        .map-svg {
+        /* SVG Styles */
+        .map-svg, .minimap-svg {
             width: 100%;
             height: 100%;
-            cursor: crosshair;
-        }
-
-        .minimap-svg {
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
         }
 
         .terrain {
-            fill: #2d4a2d;
-            stroke: #1a3d1a;
-            stroke-width: 0.5;
+            fill: #2a4a2a;
+            stroke: #1a3a1a;
+            stroke-width: 1;
         }
 
         .water {
-            fill: #1a3d5c;
-            stroke: #0f2a3d;
-            stroke-width: 0.5;
+            fill: #003366;
+            stroke: #002244;
+            stroke-width: 1;
         }
 
         .mountain {
             fill: #4a4a4a;
             stroke: #333;
-            stroke-width: 0.5;
+            stroke-width: 1;
+        }
+
+        .building {
+            fill: #8a6a3a;
+            stroke: #6a4a2a;
+            stroke-width: 2;
         }
 
         .unit {
@@ -191,16 +189,14 @@
             stroke-width: 1;
         }
 
-        .building {
-            fill: #ff6600;
-            stroke: #cc5500;
-            stroke-width: 1;
-        }
-
         .resource-node {
             fill: #0066ff;
             stroke: #0044cc;
             stroke-width: 1;
+        }
+        
+        #viewport-rect {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -224,62 +220,100 @@
             </div>
         </div>
 
-        <div class="main-map">
-            <svg class="map-svg" viewBox="0 0 800 600" onclick="handleMapClick(event)">
-                <!-- Terrain -->
-                <rect class="terrain" x="0" y="0" width="800" height="600"/>
-                
-                <!-- Water bodies -->
-                <ellipse class="water" cx="200" cy="150" rx="80" ry="40"/>
-                <ellipse class="water" cx="600" cy="400" rx="100" ry="60"/>
-                
-                <!-- Mountains -->
-                <polygon class="mountain" points="100,100 150,50 200,100 175,150 125,150"/>
-                <polygon class="mountain" points="650,200 700,150 750,200 725,250 675,250"/>
-                <polygon class="mountain" points="50,450 100,400 150,450 125,500 75,500"/>
-                
-                <!-- Resource nodes -->
-                <circle class="resource-node" cx="300" cy="200" r="8"/>
-                <circle class="resource-node" cx="500" cy="300" r="8"/>
-                <circle class="resource-node" cx="400" cy="500" r="8"/>
-                
-                <!-- Buildings -->
-                <rect class="building" x="350" y="250" width="30" height="30"/>
-                <rect class="building" x="400" y="200" width="25" height="25"/>
-                
-                <!-- Units -->
-                <circle class="unit" cx="320" cy="280" r="5"/>
-                <circle class="unit" cx="380" cy="320" r="5"/>
-                <circle class="unit" cx="450" cy="250" r="5"/>
-                <circle class="unit" cx="420" cy="280" r="5"/>
+        <div class="main-map" id="main-map">
+            <svg class="map-svg" id="map-svg" viewBox="0 0 800 600">
+                <g id="map-content">
+                    <!-- Terrain (now covers the full map size) -->
+                    <rect class="terrain" x="0" y="0" width="2400" height="1800"/>
+                    
+                    <!-- Water bodies (distributed across the larger map) -->
+                    <ellipse class="water" cx="200" cy="150" rx="80" ry="40"/>
+                    <ellipse class="water" cx="600" cy="400" rx="100" ry="60"/>
+                    <ellipse class="water" cx="1400" cy="800" rx="120" ry="70"/>
+                    <ellipse class="water" cx="2000" cy="300" rx="90" ry="50"/>
+                    <ellipse class="water" cx="1800" cy="1400" rx="150" ry="80"/>
+                    
+                    <!-- Mountains (distributed across the larger map) -->
+                    <polygon class="mountain" points="100,100 150,50 200,100 175,150 125,150"/>
+                    <polygon class="mountain" points="650,200 700,150 750,200 725,250 675,250"/>
+                    <polygon class="mountain" points="50,450 100,400 150,450 125,500 75,500"/>
+                    <polygon class="mountain" points="1200,600 1250,550 1300,600 1275,650 1225,650"/>
+                    <polygon class="mountain" points="1600,1000 1650,950 1700,1000 1675,1050 1625,1050"/>
+                    <polygon class="mountain" points="2200,1500 2250,1450 2300,1500 2275,1550 2225,1550"/>
+                    <polygon class="mountain" points="900,1300 950,1250 1000,1300 975,1350 925,1350"/>
+                    
+                    <!-- Resource nodes (distributed across the larger map) -->
+                    <circle class="resource-node" cx="300" cy="200" r="8"/>
+                    <circle class="resource-node" cx="500" cy="300" r="8"/>
+                    <circle class="resource-node" cx="400" cy="500" r="8"/>
+                    <circle class="resource-node" cx="1100" cy="400" r="8"/>
+                    <circle class="resource-node" cx="1500" cy="700" r="8"/>
+                    <circle class="resource-node" cx="1800" cy="1100" r="8"/>
+                    <circle class="resource-node" cx="2100" cy="900" r="8"/>
+                    <circle class="resource-node" cx="700" cy="1200" r="8"/>
+                    <circle class="resource-node" cx="1300" cy="1500" r="8"/>
+                    
+                    <!-- Buildings (distributed across the larger map) -->
+                    <rect class="building" x="1150" y="1050" width="30" height="30"/>
+                    <rect class="building" x="1200" y="1000" width="25" height="25"/>
+                    <rect class="building" x="1600" y="600" width="35" height="35"/>
+                    <rect class="building" x="2000" y="1200" width="30" height="30"/>
+                    <rect class="building" x="800" y="800" width="40" height="40"/>
+                    
+                    <!-- Units (distributed across the larger map) -->
+                    <circle class="unit" cx="1120" cy="1080" r="5"/>
+                    <circle class="unit" cx="1180" cy="1120" r="5"/>
+                    <circle class="unit" cx="1250" cy="1050" r="5"/>
+                    <circle class="unit" cx="1220" cy="1080" r="5"/>
+                    <circle class="unit" cx="820" cy="850" r="5"/>
+                    <circle class="unit" cx="850" cy="820" r="5"/>
+                    <circle class="unit" cx="1650" cy="650" r="5"/>
+                    <circle class="unit" cx="2050" cy="1250" r="5"/>
+                </g>
             </svg>
         </div>
 
         <div class="minimap">
             <div class="menu-title">MINIMAP</div>
-            <svg class="minimap-svg" viewBox="0 0 200 150" onclick="handleMinimapClick(event)">
+            <svg class="minimap-svg" viewBox="0 0 200 150">
                 <!-- Simplified terrain -->
                 <rect class="terrain" x="0" y="0" width="200" height="150"/>
                 
-                <!-- Water -->
-                <ellipse class="water" cx="50" cy="37" rx="20" ry="10"/>
-                <ellipse class="water" cx="150" cy="100" rx="25" ry="15"/>
+                <!-- Water (scaled down from main map) -->
+                <ellipse class="water" cx="17" cy="12" rx="7" ry="3"/>
+                <ellipse class="water" cx="50" cy="33" rx="8" ry="5"/>
+                <ellipse class="water" cx="117" cy="67" rx="10" ry="6"/>
+                <ellipse class="water" cx="167" cy="25" rx="7" ry="4"/>
+                <ellipse class="water" cx="150" cy="117" rx="12" ry="7"/>
                 
-                <!-- Mountains -->
-                <polygon class="mountain" points="25,25 37,12 50,25 43,37 31,37"/>
-                <polygon class="mountain" points="162,50 175,37 187,50 181,62 168,62"/>
+                <!-- Mountains (scaled down from main map) -->
+                <polygon class="mountain" points="8,8 12,4 17,8 15,12 10,12"/>
+                <polygon class="mountain" points="54,17 58,12 62,17 60,21 56,21"/>
+                <polygon class="mountain" points="4,37 8,33 12,37 10,42 6,42"/>
+                <polygon class="mountain" points="100,50 104,46 108,50 106,54 102,54"/>
+                <polygon class="mountain" points="133,83 137,79 142,83 140,87 135,87"/>
+                <polygon class="mountain" points="183,125 187,121 192,125 190,129 185,129"/>
+                <polygon class="mountain" points="75,108 79,104 83,108 81,112 77,112"/>
                 
-                <!-- Buildings -->
-                <rect class="building" x="87" y="62" width="8" height="8"/>
-                <rect class="building" x="100" y="50" width="6" height="6"/>
+                <!-- Buildings (scaled down from main map) -->
+                <rect class="building" x="96" y="87" width="3" height="3"/>
+                <rect class="building" x="100" y="83" width="2" height="2"/>
+                <rect class="building" x="133" y="50" width="3" height="3"/>
+                <rect class="building" x="167" y="100" width="3" height="3"/>
+                <rect class="building" x="67" y="67" width="3" height="3"/>
                 
-                <!-- Units -->
-                <circle class="unit" cx="80" cy="70" r="2"/>
-                <circle class="unit" cx="95" cy="80" r="2"/>
-                <circle class="unit" cx="112" cy="62" r="2"/>
+                <!-- Units (scaled down from main map) -->
+                <circle class="unit" cx="93" cy="90" r="1"/>
+                <circle class="unit" cx="98" cy="93" r="1"/>
+                <circle class="unit" cx="104" cy="87" r="1"/>
+                <circle class="unit" cx="102" cy="90" r="1"/>
+                <circle class="unit" cx="68" cy="71" r="1"/>
+                <circle class="unit" cx="71" cy="68" r="1"/>
+                <circle class="unit" cx="137" cy="54" r="1"/>
+                <circle class="unit" cx="171" cy="104" r="1"/>
                 
                 <!-- View rectangle -->
-                <rect x="70" y="45" width="60" height="40" fill="none" stroke="#ffff00" stroke-width="1" opacity="0.7"/>
+                <rect id="viewport-rect" x="66" y="50" width="67" height="50" fill="none" stroke="#ffff00" stroke-width="2" opacity="0.8"/>
             </svg>
         </div>
 
@@ -330,6 +364,71 @@
             log_status 
         } from './pkg/rts_mock.js';
 
+        // Map state management in JavaScript
+        const mapState = {
+            mapWidth: 2400,
+            mapHeight: 1800,
+            viewportWidth: 800,
+            viewportHeight: 600,
+            viewportX: 800, // Start centered
+            viewportY: 600
+        };
+
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let viewportStart = { x: 0, y: 0 };
+        let scrollInterval = null;
+        let currentMousePos = { x: 0, y: 0 };
+
+        function updateMapView() {
+            const mapContent = document.getElementById('map-content');
+            if (mapContent) {
+                mapContent.setAttribute('transform', `translate(${-mapState.viewportX}, ${-mapState.viewportY})`);
+            }
+            updateMinimapViewport();
+        }
+
+        function updateMinimapViewport() {
+            const viewportRect = document.getElementById('viewport-rect');
+            if (viewportRect) {
+                const scaleX = 200 / mapState.mapWidth;
+                const scaleY = 150 / mapState.mapHeight;
+                
+                viewportRect.setAttribute('x', mapState.viewportX * scaleX);
+                viewportRect.setAttribute('y', mapState.viewportY * scaleY);
+                viewportRect.setAttribute('width', mapState.viewportWidth * scaleX);
+                viewportRect.setAttribute('height', mapState.viewportHeight * scaleY);
+            }
+        }
+
+        function clampViewport() {
+            mapState.viewportX = Math.max(0, Math.min(mapState.viewportX, mapState.mapWidth - mapState.viewportWidth));
+            mapState.viewportY = Math.max(0, Math.min(mapState.viewportY, mapState.mapHeight - mapState.viewportHeight));
+        }
+
+        function handleEdgeScroll() {
+            const mapDiv = document.getElementById('main-map');
+            const rect = mapDiv.getBoundingClientRect();
+            const edgeThreshold = 50;
+            const scrollSpeed = 15;
+            
+            let dx = 0;
+            let dy = 0;
+            
+            if (currentMousePos.x < edgeThreshold) dx = -scrollSpeed;
+            else if (currentMousePos.x > rect.width - edgeThreshold) dx = scrollSpeed;
+            
+            if (currentMousePos.y < edgeThreshold) dy = -scrollSpeed;
+            else if (currentMousePos.y > rect.height - edgeThreshold) dy = scrollSpeed;
+            
+            if (dx !== 0 || dy !== 0) {
+                mapState.viewportX += dx;
+                mapState.viewportY += dy;
+                clampViewport();
+                updateMapView();
+            }
+        }
+
         async function run() {
             await init();
             
@@ -343,38 +442,140 @@
                 }
             };
 
-            // Make functions globally available
-            window.handleMapClick = function(event) {
-                const rect = event.target.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-                handle_map_click(x, y);
-            };
+            // Initialize map view
+            updateMapView();
+            log_status("Game UI initialized with scrollable map");
 
-            window.handleMinimapClick = function(event) {
-                const rect = event.target.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-                handle_minimap_click(x, y);
-            };
+            // Map interactions
+            const mapSvg = document.getElementById('map-svg');
+            const mapDiv = document.getElementById('main-map');
+            
+            // Map click handler
+            mapSvg.addEventListener('click', function(event) {
+                if (!isDragging) {
+                    const pt = mapSvg.createSVGPoint();
+                    pt.x = event.clientX;
+                    pt.y = event.clientY;
+                    const svgP = pt.matrixTransform(mapSvg.getScreenCTM().inverse());
+                    const worldX = svgP.x + mapState.viewportX;
+                    const worldY = svgP.y + mapState.viewportY;
+                    handle_map_click(worldX, worldY);
+                }
+            });
 
-            window.handleBuildButton = function(building) {
-                handle_build_button(building);
-            };
+            // Mouse down for drag
+            mapDiv.addEventListener('mousedown', function(event) {
+                if (event.button === 0) { // Left mouse button
+                    isDragging = true;
+                    dragStart.x = event.clientX;
+                    dragStart.y = event.clientY;
+                    viewportStart.x = mapState.viewportX;
+                    viewportStart.y = mapState.viewportY;
+                    mapDiv.classList.add('dragging');
+                    event.preventDefault();
+                }
+            });
 
-            window.handleResearchButton = function(tech) {
-                handle_research_button(tech);
-            };
+            // Mouse move for drag and edge scroll
+            document.addEventListener('mousemove', function(event) {
+                const rect = mapDiv.getBoundingClientRect();
+                const isOverMap = event.clientX >= rect.left && event.clientX <= rect.right &&
+                                 event.clientY >= rect.top && event.clientY <= rect.bottom;
+                
+                if (isOverMap) {
+                    currentMousePos.x = event.clientX - rect.left;
+                    currentMousePos.y = event.clientY - rect.top;
+                    
+                    if (isDragging && event.buttons === 1) {
+                        const dx = dragStart.x - event.clientX;
+                        const dy = dragStart.y - event.clientY;
+                        mapState.viewportX = viewportStart.x + dx;
+                        mapState.viewportY = viewportStart.y + dy;
+                        clampViewport();
+                        updateMapView();
+                    } else if (!isDragging && !scrollInterval) {
+                        scrollInterval = setInterval(handleEdgeScroll, 16);
+                    }
+                } else if (scrollInterval) {
+                    clearInterval(scrollInterval);
+                    scrollInterval = null;
+                }
+            });
 
-            window.handleUnitCommand = function(command) {
-                handle_unit_command(command);
-            };
+            // Mouse up to stop drag
+            document.addEventListener('mouseup', function(event) {
+                if (event.button === 0) {
+                    isDragging = false;
+                    mapDiv.classList.remove('dragging');
+                }
+            });
 
-            window.handleResourceClick = function(resource) {
-                handle_resource_click(resource);
-            };
+            // Minimap click handler
+            const minimapSvg = document.querySelector('.minimap-svg');
+            minimapSvg.addEventListener('click', function(event) {
+                const pt = minimapSvg.createSVGPoint();
+                pt.x = event.clientX;
+                pt.y = event.clientY;
+                const svgP = pt.matrixTransform(minimapSvg.getScreenCTM().inverse());
+                
+                // Convert minimap coordinates to world coordinates
+                const scaleX = mapState.mapWidth / 200;
+                const scaleY = mapState.mapHeight / 150;
+                
+                // Center viewport on clicked position
+                mapState.viewportX = (svgP.x * scaleX) - (mapState.viewportWidth / 2);
+                mapState.viewportY = (svgP.y * scaleY) - (mapState.viewportHeight / 2);
+                clampViewport();
+                updateMapView();
+                
+                handle_minimap_click(svgP.x, svgP.y);
+            });
 
-            log_status("Game UI initialized successfully");
+            // Keyboard controls
+            document.addEventListener('keydown', function(event) {
+                const step = 30;
+                let moved = false;
+                
+                switch(event.key) {
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        mapState.viewportY -= step;
+                        moved = true;
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        mapState.viewportY += step;
+                        moved = true;
+                        break;
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        mapState.viewportX -= step;
+                        moved = true;
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        mapState.viewportX += step;
+                        moved = true;
+                        break;
+                }
+                
+                if (moved) {
+                    event.preventDefault();
+                    clampViewport();
+                    updateMapView();
+                    log_status(`Viewport moved to (${Math.round(mapState.viewportX)}, ${Math.round(mapState.viewportY)})`);
+                }
+            });
+
+            // Make WASM functions globally available
+            window.handleBuildButton = handle_build_button;
+            window.handleResearchButton = handle_research_button;
+            window.handleUnitCommand = handle_unit_command;
+            window.handleResourceClick = handle_resource_click;
         }
 
         run();
