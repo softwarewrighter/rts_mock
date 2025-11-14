@@ -2,6 +2,8 @@
 
 A web-based real-time strategy (RTS) game UI mockup built with Rust and WebAssembly. This project demonstrates a classic RTS interface with interactive elements but no actual game logic - it's purely a UI demonstration.
 
+![RTS Game UI Screenshot](images/screenshot.png)
+
 ## Features
 
 ### Game Interface
@@ -46,13 +48,14 @@ A web-based real-time strategy (RTS) game UI mockup built with Rust and WebAssem
 
 3. **Serve the application**
    ```bash
+   # Using basic-http-server (recommended for Rust projects)
+   basic-http-server -a 0.0.0.0:8000
+
    # Using Python
    python -m http.server 8000
-   
+
    # Using Node.js
    npx serve .
-   
-   # Using any other static file server
    ```
 
 4. **Open in browser**
@@ -74,15 +77,17 @@ All interactions are logged to both the browser console and the on-screen status
 
 ```
 rts_mock/
-├── src/
-│   ├── lib.rs          # Main WASM module with interaction handlers
-│   └── main.rs         # Original CLI entry point (unused)
-├── docs/               # Documentation
-│   └── overview.md     # Project overview for management
-├── pkg/                # Generated WASM output (after build)
-├── index.html          # Main web interface
-├── Cargo.toml          # Rust project configuration
-└── README.md           # This file
++-- src/
+|   +-- lib.rs          # Main WASM module with interaction handlers
+|   +-- main.rs         # Original CLI entry point (unused)
++-- docs/               # Documentation
+|   +-- overview.md     # Project overview for management
++-- images/             # Screenshots and visual assets
+|   +-- screenshot.png  # UI screenshot
++-- pkg/                # Generated WASM output (after build)
++-- index.html          # Main web interface
++-- Cargo.toml          # Rust project configuration
++-- README.md           # This file
 ```
 
 ## Development
