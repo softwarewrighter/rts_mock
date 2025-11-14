@@ -21,13 +21,13 @@
 
         .game-container {
             display: grid;
-            grid-template-areas: 
+            grid-template-areas:
                 "resources resources resources"
                 "map map minimap"
                 "build research controls";
             grid-template-columns: 1fr 1fr 300px;
             grid-template-rows: 50px 1fr 200px;
-            height: 100vh;
+            height: calc(100vh - 60px);
             gap: 2px;
             background: #333;
         }
@@ -142,7 +142,7 @@
 
         .status-display {
             position: fixed;
-            bottom: 0;
+            bottom: 30px;
             left: 0;
             right: 0;
             background: #0a0a0a;
@@ -151,6 +151,39 @@
             border-top: 2px solid #444;
             font-size: 14px;
             z-index: 1000;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            color: #00cc00;
+            padding: 6px 20px;
+            border-top: 1px solid #444;
+            font-size: 11px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 999;
+            height: 30px;
+        }
+
+        .footer a {
+            color: #00ff00;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+
+        .footer-separator {
+            color: #444;
         }
 
         /* SVG Styles */
@@ -530,6 +563,14 @@
 
     <div class="status-display" id="status">
         RTS Game UI Mockup - Click on any element to see status messages
+    </div>
+
+    <div class="footer">
+        <span>Copyright &copy; 2025 Michael A. Wright</span>
+        <span class="footer-separator">|</span>
+        <a href="LICENSE" target="_blank">MIT License</a>
+        <span class="footer-separator">|</span>
+        <a href="https://github.com/softwarewrighter/rts_mock" target="_blank">GitHub Repository</a>
     </div>
 
     <script type="module">
