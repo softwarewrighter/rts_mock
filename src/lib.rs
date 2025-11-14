@@ -91,7 +91,9 @@ mod tests {
     }
 }
 
-#[cfg(test)]
+// WASM-specific tests that require wasm-pack test to run
+// These are excluded from cargo test to avoid dead_code warnings
+#[cfg(all(test, target_arch = "wasm32"))]
 mod wasm_tests {
     use super::*;
     use wasm_bindgen_test::*;
@@ -135,3 +137,4 @@ mod wasm_tests {
         // Test edge cases for coordinate handling
     }
 }
+

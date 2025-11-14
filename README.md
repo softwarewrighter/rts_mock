@@ -77,6 +77,8 @@ rts_mock/
 ├── src/
 │   ├── lib.rs          # Main WASM module with interaction handlers
 │   └── main.rs         # Original CLI entry point (unused)
+├── docs/               # Documentation
+│   └── overview.md     # Project overview for management
 ├── pkg/                # Generated WASM output (after build)
 ├── index.html          # Main web interface
 ├── Cargo.toml          # Rust project configuration
@@ -93,8 +95,13 @@ cargo clippy
 # Format code
 cargo fmt
 
-# Run tests
+# Run unit tests
 cargo test
+
+# Run WASM tests (requires browser)
+wasm-pack test --headless --firefox
+# or
+wasm-pack test --headless --chrome
 ```
 
 ### Architecture
