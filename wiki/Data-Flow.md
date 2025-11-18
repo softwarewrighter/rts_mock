@@ -67,23 +67,23 @@ Simple, synchronous data pipeline for button interactions.
 
 ```mermaid
 flowchart LR
-    A[User Clicks<br/>'Barracks' Button] --> B[DOM Event<br/>onclick]
+    A[User Clicks 'Barracks' Button] --> B[DOM Event onclick]
     B --> C{Event Type}
-    C -->|Build| D[handleBuildButton<br/>'barracks']
-    C -->|Research| E[handleResearchButton<br/>'armor']
-    C -->|Unit Cmd| F[handleUnitCommand<br/>'attack']
-    C -->|Resource| G[handleResourceClick<br/>'gold']
+    C -->|Build| D[handleBuildButton 'barracks']
+    C -->|Research| E[handleResearchButton 'armor']
+    C -->|Unit Cmd| F[handleUnitCommand 'attack']
+    C -->|Resource| G[handleResourceClick 'gold']
 
     D --> H[WASM Handler]
     E --> H
     F --> H
     G --> H
 
-    H --> I[format_status_message<br/>prefix + details]
-    I --> J[log_status<br/>message]
-    J --> K[Console Log<br/>'RTS Status: ...']
-    K --> L[Status Display<br/>Update]
-    L --> M[User Sees<br/>Feedback]
+    H --> I[format_status_message prefix + details]
+    I --> J[log_status message]
+    J --> K[Console Log 'RTS Status: ...']
+    K --> L[Status Display Update]
+    L --> M[User Sees Feedback]
 
     style A fill:#4169E1
     style H fill:#90EE90
@@ -115,27 +115,27 @@ Complex coordinate transformation pipeline.
 
 ```mermaid
 flowchart TD
-    A[User Clicks Map<br/>Screen 400, 300] --> B[DOM Event]
+    A[User Clicks Map Screen 400, 300] --> B[DOM Event]
     B --> C[Get Bounding Rect]
-    C --> D[Screen Coordinates<br/>clientX, clientY]
+    C --> D[Screen Coordinates clientX, clientY]
 
-    D --> E[Convert to SVG<br/>Coordinates]
-    E --> F[SVG Viewbox<br/>0-800, 0-600]
+    D --> E[Convert to SVG Coordinates]
+    E --> F[SVG Viewbox 0-800, 0-600]
 
-    F --> G[Adjust for<br/>Isometric Offset<br/>-400, -100]
-    G --> H[Apply Inverse<br/>Transform Matrix<br/>det = 0.866*0.5...]
+    F --> G[Adjust for Isometric Offset -400, -100]
+    G --> H[Apply Inverse Transform Matrix det = 0.866*0.5...]
 
-    H --> I[Add Viewport<br/>Position<br/>+ viewportX/Y]
-    I --> J[World Coordinates<br/>1234.5, 978.2]
+    H --> I[Add Viewport Position + viewportX/Y]
+    I --> J[World Coordinates 1234.5, 978.2]
 
-    J --> K[WASM Handler<br/>handle_map_click<br/>x: f64, y: f64]
-    K --> L[format_coordinates<br/>Round to integers]
-    L --> M[Format String<br/>'1235, 978']
+    J --> K[WASM Handler handle_map_click x: f64, y: f64]
+    K --> L[format_coordinates Round to integers]
+    L --> M[Format String '1235, 978']
 
-    M --> N[format_status_message<br/>'Map clicked at: ...']
+    M --> N[format_status_message 'Map clicked at: ...']
     N --> O[log_status]
     O --> P[Console + Display]
-    P --> Q[User Sees<br/>World Coordinates]
+    P --> Q[User Sees World Coordinates]
 
     style A fill:#4169E1
     style K fill:#90EE90
@@ -178,9 +178,9 @@ State management for viewport panning.
 stateDiagram-v2
     [*] --> NotDragging
     NotDragging --> Dragging: mousedown
-    Dragging --> Dragging: mousemove<br/>(update viewport)
+    Dragging --> Dragging: mousemove (update viewport)
     Dragging --> NotDragging: mouseup
-    NotDragging --> NotDragging: mousemove<br/>(ignored)
+    NotDragging --> NotDragging: mousemove (ignored)
 
     state NotDragging {
         [*] --> Idle
@@ -221,11 +221,11 @@ const mapState = {
 ```mermaid
 graph LR
     A[mousemove Event] --> B[Calculate dx, dy]
-    B --> C[viewportX = start + dx<br/>viewportY = start + dy]
-    C --> D[Clamp to Bounds<br/>0 to mapWidth-viewportWidth]
-    D --> E[Update SVG Transform<br/>translate-viewportX, -viewportY]
-    E --> F[Update Minimap Rect<br/>Scale by 200/2400]
-    F --> G[Render Frame<br/>60fps]
+    B --> C[viewportX = start + dx viewportY = start + dy]
+    C --> D[Clamp to Bounds 0 to mapWidth-viewportWidth]
+    D --> E[Update SVG Transform translate-viewportX, -viewportY]
+    E --> F[Update Minimap Rect Scale by 200/2400]
+    F --> G[Render Frame 60fps]
 
     style A fill:#4169E1
     style G fill:#FFD700
@@ -239,23 +239,23 @@ Bidirectional coordinate scaling between minimap and main map.
 
 ```mermaid
 flowchart TD
-    A[User Clicks<br/>Minimap 100, 75] --> B[Get SVG Point]
-    B --> C[Screen → SVG<br/>Coordinate Transform]
-    C --> D[Minimap Coords<br/>100, 75]
+    A[User Clicks Minimap 100, 75] --> B[Get SVG Point]
+    B --> C[Screen → SVG Coordinate Transform]
+    C --> D[Minimap Coords 100, 75]
 
-    D --> E[Scale to World<br/>scaleX = 2400/200 = 12<br/>scaleY = 1800/150 = 12]
-    E --> F[World Position<br/>1200, 900]
+    D --> E[Scale to World scaleX = 2400/200 = 12 scaleY = 1800/150 = 12]
+    E --> F[World Position 1200, 900]
 
-    F --> G[Center Viewport<br/>viewportX = 1200 - 400<br/>viewportY = 900 - 300]
-    G --> H[Clamp Bounds<br/>0-1600, 0-1200]
+    F --> G[Center Viewport viewportX = 1200 - 400 viewportY = 900 - 300]
+    G --> H[Clamp Bounds 0-1600, 0-1200]
 
-    H --> I[Update Main Map<br/>SVG Transform]
-    I --> J[Update Minimap<br/>Viewport Rect]
+    H --> I[Update Main Map SVG Transform]
+    I --> J[Update Minimap Viewport Rect]
 
-    J --> K[WASM Log<br/>handle_minimap_click100, 75]
-    K --> L[Status Display<br/>Update]
+    J --> K[WASM Log handle_minimap_click100, 75]
+    K --> L[Status Display Update]
 
-    I --> M[User Sees<br/>Map Jump to Position]
+    I --> M[User Sees Map Jump to Position]
     L --> M
 
     style A fill:#4169E1
@@ -288,7 +288,7 @@ Discrete viewport updates from keyboard input.
 
 ```mermaid
 flowchart LR
-    A[User Presses<br/>Arrow/WASD] --> B[keydown Event]
+    A[User Presses Arrow/WASD] --> B[keydown Event]
     B --> C{Which Key?}
 
     C -->|Up/W| D[viewportY -= 40]
@@ -301,11 +301,11 @@ flowchart LR
     F --> H
     G --> H
 
-    H --> I[Update SVG<br/>Transform]
-    I --> J[Update Minimap<br/>Viewport Rect]
+    H --> I[Update SVG Transform]
+    I --> J[Update Minimap Viewport Rect]
 
-    J --> K[Log Status<br/>Viewport moved to...]
-    K --> L[User Sees<br/>Map Scroll]
+    J --> K[Log Status Viewport moved to...]
+    K --> L[User Sees Map Scroll]
 
     style A fill:#4169E1
     style L fill:#FFD700
@@ -328,20 +328,20 @@ Interval-based continuous updates.
 
 ```mermaid
 flowchart TD
-    A[Mouse Moves<br/>Over Map] --> B[Update<br/>currentMousePos]
-    B --> C{Mouse Near<br/>Edge < 50px?}
+    A[Mouse Moves Over Map] --> B[Update currentMousePos]
+    B --> C{Mouse Near Edge < 50px?}
 
-    C -->|Yes| D{scrollInterval<br/>Running?}
-    C -->|No| E[Clear Interval<br/>if exists]
+    C -->|Yes| D{scrollInterval Running?}
+    C -->|No| E[Clear Interval if exists]
 
-    D -->|No| F[Start Interval<br/>setInterval 16ms]
+    D -->|No| F[Start Interval setInterval 16ms]
     D -->|Yes| G[Continue Existing]
 
     F --> H[handleEdgeScroll]
     G --> H
 
-    H --> I[Calculate dx, dy<br/>±20px based on edge]
-    I --> J[viewportX += dx<br/>viewportY += dy]
+    H --> I[Calculate dx, dy ±20px based on edge]
+    I --> J[viewportX += dx viewportY += dy]
     J --> K[Clamp Bounds]
     K --> L[Update Map Transform]
     L --> M[Update Minimap]
@@ -380,22 +380,22 @@ Console override intercepts and routes messages.
 
 ```mermaid
 flowchart TD
-    A[WASM Function<br/>Calls log_status] --> B[web_sys::console::log_1]
+    A[WASM Function Calls log_status] --> B[web_sys::console::log_1]
     B --> C[Browser Console API]
-    C --> D[Overridden<br/>console.log Function]
+    C --> D[Overridden console.log Function]
 
-    D --> E[Call Original<br/>console.log<br/>Developer Tools Output]
-    D --> F{Message Contains<br/>'RTS Status:'?}
+    D --> E[Call Original console.log Developer Tools Output]
+    D --> F{Message Contains 'RTS Status:'?}
 
-    F -->|Yes| G[Extract Message<br/>Remove 'RTS Status: ']
+    F -->|Yes| G[Extract Message Remove 'RTS Status: ']
     F -->|No| H[Ignore]
 
-    G --> I[Get Status Element<br/>getElementById'status']
+    G --> I[Get Status Element getElementById'status']
     I --> J[Update textContent]
-    J --> K[DOM Renders<br/>New Status]
+    J --> K[DOM Renders New Status]
 
-    E --> L[Developer Sees<br/>Console Log]
-    K --> M[User Sees<br/>Status Display]
+    E --> L[Developer Sees Console Log]
+    K --> M[User Sees Status Display]
 
     style A fill:#90EE90
     style D fill:#ff9900

@@ -240,16 +240,16 @@ rts_mock/
 
 ```mermaid
 graph LR
-    A[Edit Code<br/>src/lib.rs] --> B[Run Tests<br/>cargo test]
+    A[Edit Code src/lib.rs] --> B[Run Tests cargo test]
     B --> C{Tests Pass?}
     C -->|No| A
-    C -->|Yes| D[Build WASM<br/>wasm-pack build]
-    D --> E[Start Server<br/>python -m http.server]
-    E --> F[Test in Browser<br/>localhost:8000]
+    C -->|Yes| D[Build WASM wasm-pack build]
+    D --> E[Start Server python -m http.server]
+    E --> F[Test in Browser localhost:8000]
     F --> G{Works?}
     G -->|No| A
-    G -->|Yes| H[Code Quality<br/>clippy + fmt]
-    H --> I[Commit Changes<br/>git commit]
+    G -->|Yes| H[Code Quality clippy + fmt]
+    H --> I[Commit Changes git commit]
 
     style A fill:#FFD700
     style D fill:#90EE90

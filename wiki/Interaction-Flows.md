@@ -153,10 +153,10 @@ sequenceDiagram
     MapSVG->>DOM: click event
     DOM->>JS: Event listener triggered
     JS->>JS: Get SVG bounding rect
-    JS->>JS: screen → SVG coords<br/>(400, 300) → (400, 300)
-    JS->>JS: SVG → Viewport coords<br/>Adjust for (400, 100) offset
-    JS->>JS: Apply inverse isometric transform<br/>matrix(0.866, 0.5, -0.866, 0.5, ...)
-    JS->>JS: Viewport → World coords<br/>Add viewport position
+    JS->>JS: screen → SVG coords (400, 300) → (400, 300)
+    JS->>JS: SVG → Viewport coords Adjust for (400, 100) offset
+    JS->>JS: Apply inverse isometric transform matrix(0.866, 0.5, -0.866, 0.5, ...)
+    JS->>JS: Viewport → World coords Add viewport position
     JS->>WASM: handle_map_click(1234.5, 978.2)
     WASM->>Helper: format_coordinates(1234.5, 978.2)
     Helper-->>WASM: "(1235, 978)"
@@ -196,14 +196,14 @@ sequenceDiagram
     JS->>JS: Set isDragging = true
     JS->>JS: Store dragStart position
     JS->>JS: Store viewportStart position
-    JS->>MapDiv: Add 'dragging' class<br/>(cursor: grabbing)
+    JS->>MapDiv: Add 'dragging' class (cursor: grabbing)
 
     Note over User,MapDiv: User drags mouse...
 
     User->>Document: Mouse move (while button down)
     Document->>JS: mousemove event
     JS->>JS: Calculate delta (dx, dy)
-    JS->>JS: Update viewport position<br/>viewportX = viewportStart.x + dx<br/>viewportY = viewportStart.y + dy
+    JS->>JS: Update viewport position viewportX = viewportStart.x + dx viewportY = viewportStart.y + dy
     JS->>JS: Clamp viewport to bounds
     JS->>MapContent: Update SVG transform
     MapContent-->>User: Map pans smoothly
@@ -213,7 +213,7 @@ sequenceDiagram
     User->>Document: Mouse up
     Document->>JS: mouseup event
     JS->>JS: Set isDragging = false
-    JS->>MapDiv: Remove 'dragging' class<br/>(cursor: grab)
+    JS->>MapDiv: Remove 'dragging' class (cursor: grab)
 
     Note over User,MapDiv: Drag complete
 ```
@@ -245,9 +245,9 @@ sequenceDiagram
     MinimapSVG->>JS: click event
     JS->>JS: Get SVG point
     JS->>JS: Transform screen → SVG coords
-    JS->>JS: Scale minimap → world coords<br/>scaleX = 2400/200 = 12<br/>scaleY = 1800/150 = 12
-    JS->>JS: Calculate world position<br/>worldX = 100 * 12 = 1200<br/>worldY = 75 * 12 = 900
-    JS->>JS: Center viewport on position<br/>viewportX = 1200 - 400 = 800<br/>viewportY = 900 - 300 = 600
+    JS->>JS: Scale minimap → world coords scaleX = 2400/200 = 12 scaleY = 1800/150 = 12
+    JS->>JS: Calculate world position worldX = 100 * 12 = 1200 worldY = 75 * 12 = 900
+    JS->>JS: Center viewport on position viewportX = 1200 - 400 = 800 viewportY = 900 - 300 = 600
     JS->>JS: Clamp viewport to bounds
     JS->>MainMap: Update SVG transform
     MainMap-->>User: Map jumps to new position
@@ -327,7 +327,7 @@ sequenceDiagram
     JS->>JS: Check key in switch statement
     JS->>JS: viewportY -= 40
     JS->>JS: Clamp viewport to bounds
-    JS->>JS: event.preventDefault()<br/>(prevent page scroll)
+    JS->>JS: event.preventDefault() (prevent page scroll)
     JS->>MapContent: Update SVG transform
     MapContent-->>User: Map scrolls up
     JS->>WASM: log_status("Viewport moved to (x, y)")
@@ -386,10 +386,10 @@ sequenceDiagram
 
     WASM->>Console: console.log("RTS Status: Map clicked at: (100, 200)")
     Console->>JS: Overridden console.log function
-    JS->>JS: originalLog(message)<br/>(preserve console output)
+    JS->>JS: originalLog(message) (preserve console output)
     JS->>JS: Check if message contains "RTS Status:"
     alt Contains "RTS Status:"
-        JS->>JS: Extract message<br/>Remove "RTS Status: " prefix
+        JS->>JS: Extract message Remove "RTS Status: " prefix
         JS->>StatusDiv: statusEl.textContent = message
         StatusDiv-->>User: Display "Map clicked at: (100, 200)"
     else Does not contain "RTS Status:"

@@ -11,18 +11,18 @@ The project uses a dual testing strategy:
 ```mermaid
 graph TB
     subgraph "Test Types"
-        UNIT[Unit Tests<br/>cargo test]
-        WASM[WASM Tests<br/>wasm-pack test]
+        UNIT[Unit Tests cargo test]
+        WASM[WASM Tests wasm-pack test]
     end
 
     subgraph "Test Targets"
-        HELPERS[Helper Functions<br/>format_* functions]
-        HANDLERS[WASM Handlers<br/>handle_* functions]
+        HELPERS[Helper Functions format_* functions]
+        HANDLERS[WASM Handlers handle_* functions]
     end
 
     subgraph "Test Environments"
-        HOST[Host Architecture<br/>x86_64/ARM]
-        BROWSER[Browser Environment<br/>WASM Runtime]
+        HOST[Host Architecture x86_64/ARM]
+        BROWSER[Browser Environment WASM Runtime]
     end
 
     UNIT --> HELPERS
@@ -289,19 +289,19 @@ fn test_coordinate_edge_cases_wasm() {
 ```mermaid
 graph TB
     subgraph "Tested Functions"
-        FMT_STATUS[format_status_message<br/>✅ 100% Coverage]
-        FMT_COORD[format_coordinates<br/>✅ 100% Coverage]
-        LOG[log_status<br/>✅ Tested in WASM]
-        MAP_CLICK[handle_map_click<br/>✅ Tested in WASM]
-        BUILD[handle_build_button<br/>✅ Tested in WASM]
-        RESEARCH[handle_research_button<br/>✅ Tested in WASM]
-        UNIT[handle_unit_command<br/>✅ Tested in WASM]
-        RESOURCE[handle_resource_click<br/>✅ Tested in WASM]
+        FMT_STATUS[format_status_message ✅ 100% Coverage]
+        FMT_COORD[format_coordinates ✅ 100% Coverage]
+        LOG[log_status ✅ Tested in WASM]
+        MAP_CLICK[handle_map_click ✅ Tested in WASM]
+        BUILD[handle_build_button ✅ Tested in WASM]
+        RESEARCH[handle_research_button ✅ Tested in WASM]
+        UNIT[handle_unit_command ✅ Tested in WASM]
+        RESOURCE[handle_resource_click ✅ Tested in WASM]
     end
 
     subgraph "Untested Functions"
-        GREET[greet<br/>⚠️ Only basic test]
-        MINI[handle_minimap_click<br/>⚠️ Not tested]
+        GREET[greet ⚠️ Only basic test]
+        MINI[handle_minimap_click ⚠️ Not tested]
     end
 
     style FMT_STATUS fill:#90EE90

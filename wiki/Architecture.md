@@ -9,20 +9,20 @@ The RTS Mock follows a **clean separation of concerns** architecture with three 
 ```mermaid
 graph TB
     subgraph "Presentation Layer"
-        HTML[index.html<br/>Complete UI Layout]
-        CSS[Inline CSS<br/>Styling & Theme]
-        SVG[SVG Graphics<br/>Map & Minimap]
+        HTML[index.html Complete UI Layout]
+        CSS[Inline CSS Styling & Theme]
+        SVG[SVG Graphics Map & Minimap]
     end
 
     subgraph "Glue Layer"
-        JS[Minimal JavaScript<br/>WASM Initialization]
-        JSEVT[Event Listeners<br/>onclick handlers]
+        JS[Minimal JavaScript WASM Initialization]
+        JSEVT[Event Listeners onclick handlers]
     end
 
     subgraph "Logic Layer"
-        WASM[WASM Binary<br/>Compiled Rust]
-        HANDLERS[Event Handlers<br/>wasm-bindgen exports]
-        HELPERS[Helper Functions<br/>Formatting utilities]
+        WASM[WASM Binary Compiled Rust]
+        HANDLERS[Event Handlers wasm-bindgen exports]
+        HELPERS[Helper Functions Formatting utilities]
     end
 
     subgraph "Browser APIs"
@@ -327,12 +327,12 @@ rts_mock/
 
 ```mermaid
 graph TB
-    SRC[src/lib.rs<br/>Rust Source] --> BUILD[wasm-pack build]
+    SRC[src/lib.rs Rust Source] --> BUILD[wasm-pack build]
     BUILD --> PKG[pkg/ directory]
 
-    PKG --> WASM[rts_mock_bg.wasm<br/>Binary]
-    PKG --> JSGLUE[rts_mock.js<br/>Glue Code]
-    PKG --> TYPES[rts_mock.d.ts<br/>TypeScript Defs]
+    PKG --> WASM[rts_mock_bg.wasm Binary]
+    PKG --> JSGLUE[rts_mock.js Glue Code]
+    PKG --> TYPES[rts_mock.d.ts TypeScript Defs]
 
     WASM --> SERVE[HTTP Server]
     JSGLUE --> SERVE

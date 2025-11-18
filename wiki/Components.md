@@ -9,16 +9,16 @@ The RTS Mock UI consists of 8 main components organized using CSS Grid:
 ```mermaid
 graph TB
     subgraph "Game Container CSS Grid"
-        RES[1. Resource Panel<br/>Top Bar]
-        MAP[2. Main Map<br/>Center-Left Large]
-        MINI[3. Minimap<br/>Top-Right]
-        BUILD[4. Build Menu<br/>Bottom-Left]
-        RSRCH[5. Research Menu<br/>Bottom-Center]
-        CTRL[6. Unit Controls<br/>Bottom-Right]
+        RES[1. Resource Panel Top Bar]
+        MAP[2. Main Map Center-Left Large]
+        MINI[3. Minimap Top-Right]
+        BUILD[4. Build Menu Bottom-Left]
+        RSRCH[5. Research Menu Bottom-Center]
+        CTRL[6. Unit Controls Bottom-Right]
     end
 
-    STATUS[7. Status Display<br/>Fixed Bottom+30px]
-    FOOTER[8. Footer<br/>Fixed Bottom]
+    STATUS[7. Status Display Fixed Bottom+30px]
+    FOOTER[8. Footer Fixed Bottom]
 
     RES -.-> STATUS
     MAP -.-> STATUS
@@ -181,10 +181,10 @@ matrix(1, 0.15, -0.3, 0.9, 200, 50)
 
 ```mermaid
 graph LR
-    SCREEN[Screen<br/>Coordinates] --> SVG[SVG<br/>Coordinates]
-    SVG --> ISO[Inverse<br/>Isometric<br/>Transform]
-    ISO --> WORLD[World<br/>Coordinates]
-    WORLD --> WASM[WASM<br/>Handler]
+    SCREEN[Screen Coordinates] --> SVG[SVG Coordinates]
+    SVG --> ISO[Inverse Isometric Transform]
+    ISO --> WORLD[World Coordinates]
+    WORLD --> WASM[WASM Handler]
 
     style SCREEN fill:#4169E1
     style WORLD fill:#ff9900
@@ -228,12 +228,12 @@ Provides overview of entire map with viewport indicator. Clicking navigates main
 
 ```mermaid
 graph TB
-    MINI_SVG[Minimap SVG 200x150] --> MINI_TERRAIN[Terrain<br/>Simplified]
-    MINI_SVG --> MINI_WATER[Water<br/>Scaled 1:12]
-    MINI_SVG --> MINI_MTN[Mountains<br/>Scaled 1:12]
-    MINI_SVG --> MINI_BLD[Buildings<br/>3x3 Rects]
-    MINI_SVG --> MINI_UNIT[Units<br/>1px Circles]
-    MINI_SVG --> VIEWPORT[Viewport Rectangle<br/>Yellow Outline]
+    MINI_SVG[Minimap SVG 200x150] --> MINI_TERRAIN[Terrain Simplified]
+    MINI_SVG --> MINI_WATER[Water Scaled 1:12]
+    MINI_SVG --> MINI_MTN[Mountains Scaled 1:12]
+    MINI_SVG --> MINI_BLD[Buildings 3x3 Rects]
+    MINI_SVG --> MINI_UNIT[Units 1px Circles]
+    MINI_SVG --> VIEWPORT[Viewport Rectangle Yellow Outline]
 
     style VIEWPORT fill:none,stroke:#ffff00
 ```
@@ -303,14 +303,14 @@ Interface for selecting building types to construct.
 
 ```mermaid
 graph TD
-    BUILD_MENU[Build Menu] --> BAR[Barracks<br/>Train Units]
-    BUILD_MENU --> HOUSE[House<br/>Increase Pop Cap]
-    BUILD_MENU --> FARM[Farm<br/>Produce Food]
-    BUILD_MENU --> MINE[Mine<br/>Gather Resources]
-    BUILD_MENU --> TOWER[Tower<br/>Defense Structure]
-    BUILD_MENU --> WALL[Wall<br/>Fortification]
-    BUILD_MENU --> GATE[Gate<br/>Entry Point]
-    BUILD_MENU --> WORKSHOP[Workshop<br/>Advanced Units]
+    BUILD_MENU[Build Menu] --> BAR[Barracks Train Units]
+    BUILD_MENU --> HOUSE[House Increase Pop Cap]
+    BUILD_MENU --> FARM[Farm Produce Food]
+    BUILD_MENU --> MINE[Mine Gather Resources]
+    BUILD_MENU --> TOWER[Tower Defense Structure]
+    BUILD_MENU --> WALL[Wall Fortification]
+    BUILD_MENU --> GATE[Gate Entry Point]
+    BUILD_MENU --> WORKSHOP[Workshop Advanced Units]
 
     style BAR fill:#8a6a3a
     style HOUSE fill:#8a6a3a
@@ -385,10 +385,10 @@ Commands for selected units.
 
 ```mermaid
 graph LR
-    CONTROLS[Unit Controls] --> MOVE[MOVE<br/>Navigate Units]
-    CONTROLS --> ATTACK[ATTACK<br/>Engage Enemies]
-    CONTROLS --> PATROL[PATROL<br/>Auto Patrol Route]
-    CONTROLS --> STOP[STOP<br/>Halt Actions]
+    CONTROLS[Unit Controls] --> MOVE[MOVE Navigate Units]
+    CONTROLS --> ATTACK[ATTACK Engage Enemies]
+    CONTROLS --> PATROL[PATROL Auto Patrol Route]
+    CONTROLS --> STOP[STOP Halt Actions]
 
     style MOVE fill:#2a2a2a,stroke:#00ccff
     style ATTACK fill:#2a2a2a,stroke:#00ccff
